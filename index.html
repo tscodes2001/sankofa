@@ -5,32 +5,33 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=DM+Mono:wght@400;500&family=Special+Elite&display=swap">
 <style>
 :root{
-  --bg:#2B1A10;
-  --panel:#4A2C18;
-  --text:#F2E4C9;
-  --accent:#D9A03A;
-  --on-accent:#120B07;
+  --bg:#EBDDBF;
+  --panel:#DCC9A2;
+  --text:#2B1A10;
+  --accent:#2B1A10;
+  --on-accent:#F2E4C9;
+  --warm:#8A4B12;
   --pen:#1B2A4A;
   --mono:"DM Mono",ui-monospace,Menlo,monospace;
   --type:"Special Elite","Courier New",monospace;
-  color-scheme:dark;
+  color-scheme:light;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--mono);font-size:15px;line-height:1.6;padding-inline:20px}
-.top{max-width:960px;margin:0 auto;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:18px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.top{max-width:960px;margin:0 auto;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:18px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--warm)}
 .stage{max-width:960px;margin:0 auto;display:grid;gap:20px;justify-items:center;padding-block:16px 40px}
 .head{margin:0;font-family:var(--type);font-weight:400;font-size:clamp(20px,4.6vw,32px);letter-spacing:.12em;text-transform:uppercase;text-align:center;transition:opacity .4s}
-[data-mode="edit"] .head{opacity:.3}
+[data-mode="edit"] .head{opacity:.6}
 .cardwrap{position:relative;width:100%;max-width:920px;--u:.5px}
-#card{display:block;width:100%;height:auto;filter:drop-shadow(0 14px 30px rgba(0,0,0,.5));transition:transform .25s}
+#card{display:block;width:100%;height:auto;filter:drop-shadow(0 10px 22px rgba(43,26,16,.28));transition:transform .25s}
 [data-mode="intro"] .cardwrap{cursor:pointer}
 [data-mode="intro"] .cardwrap:hover #card{transform:translateY(-3px)}
 .ov{display:none;position:absolute;margin:0}
 [data-mode="edit"] .ov{display:block}
 [data-mode="edit"] .photo-hit{display:grid}
 .fld{padding:0;border:0;outline:0;background:transparent;color:transparent;caret-color:var(--pen);font-weight:700;line-height:1;border-radius:2px}
-.fld:focus{background:rgba(217,160,58,.16)}
+.fld:focus{background:rgba(217,160,58,.22)}
 .photo-hit{place-items:center;cursor:pointer;font-weight:400;color:#222;text-align:center;line-height:1.1}
 .photo-hit.has{color:transparent}
 .sign-hit{background:transparent;border:0;cursor:pointer;font-weight:700;color:rgba(27,42,74,.6);text-align:center}
@@ -39,22 +40,22 @@ body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-famil
 input[type="file"]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .bar{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;font:inherit;font-size:14px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;background:var(--accent);color:var(--on-accent);border:1px solid var(--accent);border-radius:2px;cursor:pointer}
-.btn:hover{background:var(--text);border-color:var(--text)}
+.btn:hover{background:#4A2C18;border-color:#4A2C18}
 .btn.ghost{background:transparent;color:var(--accent)}
-.btn.ghost:hover{background:var(--panel);border-color:var(--accent)}
+.btn.ghost:hover{background:var(--panel);color:var(--text);border-color:var(--accent)}
 .btn[disabled]{opacity:.5;cursor:wait}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .swatches{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}
 .sw{width:44px;height:44px;border-radius:50%;border:2px solid var(--text);cursor:pointer;padding:0}
 .sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--accent)}
 .adjust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:100%;max-width:620px}
-.adjust label{display:grid;gap:4px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.adjust label{display:grid;gap:4px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm)}
 input[type="range"]{width:100%;accent-color:var(--accent)}
-.msg{min-height:1.6em;margin:0;font-size:13px;text-align:center;color:var(--accent);max-width:60ch}
+.msg{min-height:1.6em;margin:0;font-size:13px;text-align:center;color:#861B0B;font-weight:500;max-width:60ch}
 .hint{margin:0;font-size:13px;text-align:center;opacity:.75;max-width:52ch}
 .tools{display:grid;gap:16px;justify-items:center;width:100%}
 .result{display:grid;gap:18px;justify-items:center;width:100%}
-.result img{display:block;width:100%;max-width:920px;height:auto;filter:drop-shadow(0 14px 30px rgba(0,0,0,.5))}
+.result img{display:block;width:100%;max-width:920px;height:auto;filter:drop-shadow(0 10px 22px rgba(43,26,16,.28))}
 .fine{margin:0;font-size:12px;opacity:.6;text-align:center;max-width:56ch}
 .padwrap{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(18,11,7,.82)}
 .pad{width:100%;max-width:720px;background:#EEE;color:#111;padding:18px;border-radius:4px;display:grid;gap:12px}
@@ -85,9 +86,9 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
       <div class="bar">
         <button class="btn ghost" id="backBtn" type="button">Back</button>
         <a class="btn" id="dlBtn" href="#" download="id.png">Save to photos</a>
-        <button class="btn ghost" id="shareBtn" type="button" hidden>Share to my story</button>
+        <button class="btn ghost" id="shareBtn" type="button">Share</button>
       </div>
-      <p class="fine" id="resultNote">If nothing downloaded, press and hold the card and choose Save image. Tag @seventeen54 and use #SerenadeSunday.</p>
+      <p class="fine" id="resultNote">Tap Save to keep your card, or Share to send it straight to your story or WhatsApp. If nothing downloaded, press and hold the card and choose Save image. Tag @seventeen54 and use #SerenadeSunday.</p>
     </div>
     <div class="tools" id="editTools" hidden>
       <div class="swatches" id="swatches" hidden></div>
@@ -386,13 +387,19 @@ var CONFIG={
   $("backBtn").addEventListener("click",function(){setMode("edit")});
 
   var shareBtn=$("shareBtn");
-  try{var probe=new File([""],"a.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[probe]}))shareBtn.hidden=false}catch(e){}
+  function canShareFiles(){try{var probe=new File([""],"a.png",{type:"image/png"});return !!(navigator.canShare&&navigator.canShare({files:[probe]}))}catch(e){return false}}
   shareBtn.addEventListener("click",function(){
+    var note=$("resultNote");
+    if(!canShareFiles()){
+      window.open("https://wa.me/?text="+encodeURIComponent(CONFIG.shareText+" "+location.href.split("#")[0]),"_blank");
+      note.textContent="Save your card first, then post it to your story and tag @seventeen54.";
+      return;
+    }
     cv.toBlob(function(blob){
       if(!blob)return;
       var f=new File([blob],CONFIG.filePrefix+".png",{type:"image/png"});
       navigator.share({files:[f],text:CONFIG.shareText}).catch(function(err){
-        if(err&&err.name!=="AbortError")$("resultNote").textContent="Sharing is not available here. Save the card and post it yourself.";
+        if(err&&err.name!=="AbortError")note.textContent="Sharing is not available here. Save the card and post it yourself."
       });
     },"image/png");
   });
