@@ -355,7 +355,10 @@ var CONFIG={
   /* ---- 20-ticket limit: talks to a Google Apps Script link (see the setup guide) ---- */
   function claimEnabled(){return !!(CONFIG.claim&&CONFIG.claim.endpoint)}
   function getStatus(){
-    return fetch(CONFIG.claim.endpoint,{method:"GET"}).then(function(r){return r.json()});
+    return Promise.race([
+      fetch(CONFIG.claim.endpoint,{method:"GET"}).then(function(r){return r.json()}),
+      new Promise(function(_,rej){setTimeout(function(){rej(new Error("slow"))},6000)})
+    ]);
   }
   function claim(d){
     return fetch(CONFIG.claim.endpoint,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
@@ -422,7 +425,7 @@ var CONFIG={
     try{Z=detect(zimg)}catch(e){throw new Error(WEB)}
     if(!Z.photo||!Z.name)throw new Error("The zones image needs a magenta photo box and a cyan name box.");
     return CONFIG.sample?load(CONFIG.sample).then(function(i){sampleImg=i},function(){}):null;
-  }).then(function(){return fontsReady}).then(function(){
+  }).then(function(){return Promise.race([fontsReady,new Promise(function(r){setTimeout(r,2500)})])}).then(function(){
     buildSwatches();layout();
     if(CONFIG.opensAt&&Date.now()<new Date(CONFIG.opensAt).getTime()){showClosed(CONFIG.claim.soonText);return}
     if(!claimEnabled()){setMode("intro");return}
