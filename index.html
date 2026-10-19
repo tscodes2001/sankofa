@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Sankofa ID</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=DM+Mono:wght@400;500&family=Special+Elite&display=swap">
+<style>
+:root{
+  --bg:#2B1A10;
+  --panel:#4A2C18;
+  --text:#F2E4C9;
+  --accent:#D9A03A;
+  --on-accent:#120B07;
+  --pen:#1B2A4A;
+  --mono:"DM Mono",ui-monospace,Menlo,monospace;
+  --type:"Special Elite","Courier New",monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--mono);font-size:15px;line-height:1.6;padding-inline:20px}
+.top{max-width:960px;margin:0 auto;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:18px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.stage{max-width:960px;margin:0 auto;display:grid;gap:20px;justify-items:center;padding-block:16px 40px}
+.head{margin:0;font-family:var(--type);font-weight:400;font-size:clamp(20px,4.6vw,32px);letter-spacing:.12em;text-transform:uppercase;text-align:center;transition:opacity .4s}
+[data-mode="edit"] .head{opacity:.3}
+.cardwrap{position:relative;width:100%;max-width:920px;--u:.5px}
+#card{display:block;width:100%;height:auto;filter:drop-shadow(0 14px 30px rgba(0,0,0,.5));transition:transform .25s}
+[data-mode="intro"] .cardwrap{cursor:pointer}
+[data-mode="intro"] .cardwrap:hover #card{transform:translateY(-3px)}
+.ov{display:none;position:absolute;margin:0}
+[data-mode="edit"] .ov{display:block}
+[data-mode="edit"] .photo-hit{display:grid}
+.fld{padding:0;border:0;outline:0;background:transparent;color:transparent;caret-color:var(--pen);font-weight:700;line-height:1;border-radius:2px}
+.fld:focus{background:rgba(217,160,58,.16)}
+.photo-hit{place-items:center;cursor:pointer;font-weight:400;color:#222;text-align:center;line-height:1.1}
+.photo-hit.has{color:transparent}
+.sign-hit{background:transparent;border:0;cursor:pointer;font-weight:700;color:rgba(27,42,74,.6);text-align:center}
+.sign-hit.has{color:transparent}
+.ov:focus-visible,input[type="file"]:focus-visible+.photo-hit{outline:2px solid var(--accent);outline-offset:2px}
+input[type="file"]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.bar{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;font:inherit;font-size:14px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;background:var(--accent);color:var(--on-accent);border:1px solid var(--accent);border-radius:2px;cursor:pointer}
+.btn:hover{background:var(--text);border-color:var(--text)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.ghost:hover{background:var(--panel);border-color:var(--accent)}
+.btn[disabled]{opacity:.5;cursor:wait}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.swatches{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}
+.sw{width:44px;height:44px;border-radius:50%;border:2px solid var(--text);cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--accent)}
+.adjust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:100%;max-width:620px}
+.adjust label{display:grid;gap:4px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+input[type="range"]{width:100%;accent-color:var(--accent)}
+.msg{min-height:1.6em;margin:0;font-size:13px;text-align:center;color:var(--accent);max-width:60ch}
+.hint{margin:0;font-size:13px;text-align:center;opacity:.75;max-width:52ch}
+.tools{display:grid;gap:16px;justify-items:center;width:100%}
+.result{display:grid;gap:18px;justify-items:center;width:100%}
+.result img{display:block;width:100%;max-width:920px;height:auto;filter:drop-shadow(0 14px 30px rgba(0,0,0,.5))}
+.fine{margin:0;font-size:12px;opacity:.6;text-align:center;max-width:56ch}
+.padwrap{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(18,11,7,.82)}
+.pad{width:100%;max-width:720px;background:#EEE;color:#111;padding:18px;border-radius:4px;display:grid;gap:12px}
+.pad h2{margin:0;font-family:var(--type);font-weight:400;font-size:20px;letter-spacing:.1em;text-transform:uppercase}
+.pad canvas{display:block;width:100%;height:auto;aspect-ratio:900/320;background:#FFF;border:2px solid rgba(0,0,0,.5);touch-action:none;cursor:crosshair}
+.pad .bar{justify-content:flex-end}
+.pad .btn.ghost{color:#111;border-color:#111}
+.pad .btn.ghost:hover{background:rgba(0,0,0,.1);border-color:#111}
+@media (max-width:560px){.adjust{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){#card,.head{transition:none}}
+</style></head><body>
+
+<div id="root" data-mode="loading">
+  <div class="top"><span>Seventeen54</span><span>Serenade Sunday · 29 Nov 2026</span></div>
+  <main class="stage">
+    <h1 class="head" id="head">Loading your card</h1>
+    <div class="cardwrap" id="cardwrap">
+      <canvas id="card" width="1600" height="1000" role="img" aria-label="ID card"></canvas>
+      <input class="ov fld" id="fName" type="text" maxlength="22" autocomplete="off" autocapitalize="words" aria-label="Name" hidden>
+      <input class="ov fld" id="fDob" type="text" maxlength="10" inputmode="numeric" autocomplete="off" aria-label="Date of birth, day slash month slash year" hidden>
+      <input class="ov fld" id="fLoc" type="text" maxlength="22" autocomplete="off" autocapitalize="words" aria-label="Location" hidden>
+      <input id="fPhoto" type="file" accept="image/*">
+      <label class="ov photo-hit" id="photoHit" for="fPhoto" title="Choose a photo">Submit photo</label>
+      <button class="ov sign-hit" id="signHit" type="button" aria-label="Sign here">Sign here</button>
+    </div>
+    <div class="result" id="result" hidden>
+      <img id="resultImg" alt="Your finished ID card">
+      <div class="bar">
+        <button class="btn ghost" id="backBtn" type="button">Back</button>
+        <a class="btn" id="dlBtn" href="#" download="id.png">Save to photos</a>
+        <button class="btn ghost" id="shareBtn" type="button" hidden>Share to my story</button>
+      </div>
+      <p class="fine" id="resultNote">If nothing downloaded, press and hold the card and choose Save image. Tag @seventeen54 and use #SerenadeSunday.</p>
+    </div>
+    <div class="tools" id="editTools" hidden>
+      <div class="swatches" id="swatches" hidden></div>
+      <div class="adjust" id="adjust" hidden>
+        <label for="zoom">Zoom<input id="zoom" type="range" min="1" max="3" step="0.05" value="1"></label>
+        <label for="panx">Left or right<input id="panx" type="range" min="0" max="100" step="1" value="50"></label>
+        <label for="pany">Up or down<input id="pany" type="range" min="0" max="100" step="1" value="40"></label>
+      </div>
+      <div class="bar">
+        <button class="btn ghost" id="colorBtn" type="button" aria-expanded="false" hidden>Select colour</button>
+        <button class="btn" id="getBtn" type="button">Get your ID</button>
+      </div>
+    </div>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    <p class="hint" id="hint"></p>
+  </main>
+</div>
+
+<div class="padwrap" id="padwrap" hidden>
+  <div class="pad" role="dialog" aria-modal="true" aria-labelledby="padTitle">
+    <h2 id="padTitle">Sign here</h2>
+    <canvas id="pad" width="900" height="320" aria-label="Signature area. Draw with your finger or mouse."></canvas>
+    <div class="bar">
+      <button class="btn ghost" id="padClear" type="button">Clear</button>
+      <button class="btn ghost" id="padCancel" type="button">Cancel</button>
+      <button class="btn" id="padDone" type="button">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= SETTINGS: edit this block, not the code below =================
+   templates : your designed card image(s) with the filled-in areas left empty.
+               Two or more (same size) gives people a "Select colour" choice.
+   zones     : same size image with solid boxes marking where things go.
+               Photo #FF00FF, Name #00FFFF, Date of birth #FFFF00,
+               Location #00FF00, Signature #FF8000, ID number #0000FF.
+   sample    : optional finished example card for the first screen ("" = built automatically).
+   claim     : the 20-ticket limit. Leave endpoint "" while designing (no limit, no logging).
+               When you have the Google Apps Script link, paste it here.
+   opensAt   : the page stays closed until this time (South Africa time). Set "" for always open.
+*/
+var CONFIG={
+  templates:[
+    {src:"assets/template.png",label:"Green",swatch:"#3F6B4B"}
+  ],
+  zones:"assets/zones.png",
+  sample:"",
+  samplePerson:{name:"Thando Mokoena",dob:"14/03/1998",loc:"Kagiso"},
+  fontHand:'"Caveat","Segoe Script",cursive',
+  fontType:'"Special Elite","Courier New",monospace',
+  penColor:"#1B2A4A",
+  idColor:"#1D1208",
+  idPrefix:"SS-26-",
+  textScale:0.82,
+  filePrefix:"sankofa-id",
+  shareText:"Going back for it. Sankofa, Serenade Sunday, 29 Nov. #SerenadeSunday #Seventeen54",
+  introTitle:"Click to make your own",
+  editTitle:"Fill in your card",
+  doneTitle:"Your ID is ready",
+  claim:{endpoint:"",limit:20,closedText:"All 20 free tickets are gone. Thank you, Kagiso. Entry on the day is R100.",soonText:"Free tickets open soon."},
+  opensAt:"2026-10-20T10:00:00+02:00"
+};
+/* ================================================================================= */
+(function(){
+  function $(id){return document.getElementById(id)}
+  var root=$("root"),cv=$("card"),ctx=cv.getContext("2d"),wrap=$("cardwrap"),head=$("head"),hint=$("hint");
+  var nameEl=$("fName"),dobEl=$("fDob"),locEl=$("fLoc"),fileEl=$("fPhoto"),photoHit=$("photoHit"),signHit=$("signHit");
+  var zoomEl=$("zoom"),pxEl=$("panx"),pyEl=$("pany"),msgEl=$("msg"),editTools=$("editTools"),result=$("result"),getBtn=$("getBtn");
+  var COLORS={photo:[255,0,255],name:[0,255,255],dob:[255,255,0],loc:[0,255,0],sig:[255,128,0],id:[0,0,255]};
+  var W=1600,H=1000,tImgs=[],tIndex=0,sampleImg=null,Z={},photo=null,sig=null,mode="loading",closed=false,claimedId=null;
+  var off=document.createElement("canvas"),octx=off.getContext("2d");
+  var NOTE="Your photo stays on your phone. Nothing is uploaded or stored.";
+
+  function say(t){msgEl.textContent=t}
+  function fail(t){head.textContent="Something is missing";say(t)}
+  function hash(s){var h=5381;for(var i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))>>>0}return h}
+  function clean(s){return s.replace(/\s+/g," ").trim()}
+  function makeId(d){var n=clean(d.name);if(claimedId)return claimedId;return n?CONFIG.idPrefix+("0000"+(hash((n+d.dob+d.loc).toLowerCase())%10000)).slice(-4):CONFIG.idPrefix+"0000"}
+  function load(src){return new Promise(function(res,rej){var i=new Image();i.onload=function(){res(i)};i.onerror=function(){rej(new Error(src))};i.src=src})}
+
+  function detect(img){
+    var c=document.createElement("canvas");c.width=img.naturalWidth;c.height=img.naturalHeight;
+    var x=c.getContext("2d",{willReadFrequently:true});x.drawImage(img,0,0);
+    var data=x.getImageData(0,0,c.width,c.height).data,w=c.width,h=c.height,keys=Object.keys(COLORS),z={},k;
+    keys.forEach(function(key){z[key]={minx:1e9,miny:1e9,maxx:-1,maxy:-1,n:0}});
+    var maskData=new ImageData(w,h),md=maskData.data,tol=60;
+    for(var i=0,p=0;i<data.length;i+=4,p++){
+      var r=data[i],g=data[i+1],b=data[i+2];
+      for(var q=0;q<keys.length;q++){
+        k=COLORS[keys[q]];
+        if(Math.abs(r-k[0])+Math.abs(g-k[1])+Math.abs(b-k[2])<tol){
+          var s=z[keys[q]],px=p%w,py=(p-px)/w;
+          if(px<s.minx)s.minx=px;if(px>s.maxx)s.maxx=px;if(py<s.miny)s.miny=py;if(py>s.maxy)s.maxy=py;s.n++;
+          if(keys[q]==="photo"){md[i+3]=255}
+          break;
+        }
+      }
+    }
+    var out={};
+    keys.forEach(function(key){var s=z[key];if(s.n>200){out[key]={x:s.minx,y:s.miny,w:s.maxx-s.minx+1,h:s.maxy-s.miny+1}}});
+    if(out.photo){var m=document.createElement("canvas");m.width=w;m.height=h;m.getContext("2d").putImageData(maskData,0,0);out.photo.mask=m}
+    return out;
+  }
+
+  function fieldText(zone,str,family,color,alpha){
+    var fs=zone.h*CONFIG.textScale;
+    ctx.textAlign="left";ctx.textBaseline="alphabetic";ctx.fillStyle=color;ctx.globalAlpha=alpha==null?1:alpha;
+    do{ctx.font="700 "+fs+"px "+family;fs-=2}while(ctx.measureText(str).width>zone.w&&fs>12);
+    ctx.fillText(str,zone.x,zone.y+zone.h*0.9);ctx.globalAlpha=1;
+  }
+  function masked(zone,painter){
+    octx.clearRect(0,0,W,H);octx.globalCompositeOperation="source-over";
+    painter(octx);
+    octx.globalCompositeOperation="destination-in";octx.drawImage(zone.mask,0,0);
+    ctx.drawImage(off,0,0);
+  }
+  function placeholderArt(c,z){
+    c.fillStyle="#D5D5D5";c.fillRect(z.x,z.y,z.w,z.h);c.fillStyle="#9A9A9A";
+    c.beginPath();c.arc(z.x+z.w/2,z.y+z.h*.4,z.w*.2,0,Math.PI*2);c.fill();
+    c.beginPath();c.ellipse(z.x+z.w/2,z.y+z.h*1.02,z.w*.38,z.h*.34,0,0,Math.PI*2);c.fill();
+  }
+  function drawPhoto(c,z){
+    var zm=+zoomEl.value,s=Math.max(z.w/photo.width,z.h/photo.height)*zm,dw=photo.width*s,dh=photo.height*s;
+    c.drawImage(photo,z.x-(dw-z.w)*(+pxEl.value/100),z.y-(dh-z.h)*(+pyEl.value/100),dw,dh);
+  }
+  function draw(o){
+    o=o||{};var sample=!!o.sample,final=!!o.final;
+    ctx.clearRect(0,0,W,H);
+    if(sample&&sampleImg){ctx.drawImage(sampleImg,0,0,W,H);return}
+    ctx.drawImage(tImgs[tIndex],0,0,W,H);
+    var d=sample?CONFIG.samplePerson:{name:clean(nameEl.value),dob:dobEl.value.trim(),loc:clean(locEl.value)};
+    if(Z.photo){masked(Z.photo,function(c){
+      if(sample){placeholderArt(c,Z.photo)}
+      else if(photo){drawPhoto(c,Z.photo)}
+      else{c.fillStyle="#E4E4E4";c.fillRect(Z.photo.x,Z.photo.y,Z.photo.w,Z.photo.h)}
+    })}
+    [["name",d.name,"Name"],["dob",d.dob,"Date of birth"],["loc",d.loc,"Location"]].forEach(function(r){
+      if(!Z[r[0]])return;
+      if(r[1]){fieldText(Z[r[0]],r[1],CONFIG.fontHand,CONFIG.penColor)}
+      else if(!final&&!sample){fieldText(Z[r[0]],r[2],CONFIG.fontHand,CONFIG.penColor,.32)}
+    });
+    if(Z.id){fieldText(Z.id,sample?CONFIG.idPrefix+"0054":makeId(d),CONFIG.fontType,CONFIG.idColor,(sample||clean(d.name))?1:.5)}
+    if(Z.sig){
+      if(sample){
+        var fs=Z.sig.h*.7;ctx.save();ctx.translate(Z.sig.x,Z.sig.y+Z.sig.h*.8);ctx.rotate(-.05);
+        ctx.font="700 "+fs+"px "+CONFIG.fontHand;ctx.fillStyle=CONFIG.penColor;ctx.fillText("Thando M.",0,0);ctx.restore();
+      }else if(sig){
+        var sc=Math.min(Z.sig.w/sig.width,Z.sig.h/sig.height),sw=sig.width*sc,sh=sig.height*sc;
+        ctx.drawImage(sig,Z.sig.x+(Z.sig.w-sw)/2,Z.sig.y+(Z.sig.h-sh)/2,sig.width*sc,sig.height*sc);
+      }
+    }
+  }
+  function redraw(){draw(mode==="intro"||mode==="closed"?{sample:true}:{})}
+  var pending=false;
+  function schedule(){if(pending)return;pending=true;requestAnimationFrame(function(){pending=false;redraw()})}
+
+  function place(el,z,fs){
+    if(!z){el.hidden=true;return}
+    el.hidden=false;
+    el.style.left=(z.x/W*100)+"%";el.style.top=(z.y/H*100)+"%";el.style.width=(z.w/W*100)+"%";el.style.height=(z.h/H*100)+"%";
+    el.dataset.fs=z.h*fs;
+  }
+  function layout(){
+    place(nameEl,Z.name,CONFIG.textScale);place(dobEl,Z.dob,CONFIG.textScale);place(locEl,Z.loc,CONFIG.textScale);
+    [nameEl,dobEl,locEl].forEach(function(e){e.style.fontFamily=CONFIG.fontHand});
+    place(photoHit,Z.photo,0);place(signHit,Z.sig,0);
+    signHit.style.fontFamily=CONFIG.fontHand;photoHit.style.fontFamily=CONFIG.fontType;
+    setU();
+  }
+  function setU(){
+    var u=wrap.clientWidth/W;wrap.style.setProperty("--u",u+"px");
+    [nameEl,dobEl,locEl].forEach(function(e){e.style.fontSize=((+e.dataset.fs||40)*u)+"px"});
+    if(Z.photo)photoHit.style.fontSize=(Z.photo.w*.11*u)+"px";
+    if(Z.sig)signHit.style.fontSize=(Z.sig.h*.55*u)+"px";
+  }
+  window.addEventListener("resize",setU);
+
+  function setMode(m){
+    mode=m;root.dataset.mode=m;
+    wrap.hidden=(m==="result");editTools.hidden=(m!=="edit");result.hidden=(m!=="result");
+    if(m==="intro"){wrap.setAttribute("role","button");wrap.setAttribute("tabindex","0");wrap.setAttribute("aria-label","Make your own ID");head.textContent=CONFIG.introTitle}
+    else{wrap.removeAttribute("role");wrap.removeAttribute("tabindex");wrap.removeAttribute("aria-label")}
+    if(m==="edit")head.textContent=CONFIG.editTitle;
+    if(m==="result")head.textContent=CONFIG.doneTitle;
+    hint.textContent=(m==="result"||m==="closed")?"":NOTE;
+    setU();redraw();
+  }
+  function startEdit(){if(mode!=="intro")return;say("");setMode("edit");if(Z.name)nameEl.focus()}
+  wrap.addEventListener("click",startEdit);
+  wrap.addEventListener("keydown",function(e){if(mode==="intro"&&(e.key==="Enter"||e.key===" ")){e.preventDefault();startEdit()}});
+
+  nameEl.addEventListener("input",schedule);locEl.addEventListener("input",schedule);
+  dobEl.addEventListener("input",function(){
+    var d=dobEl.value.replace(/\D/g,"").slice(0,8),o=d;
+    if(d.length>4)o=d.slice(0,2)+"/"+d.slice(2,4)+"/"+d.slice(4);else if(d.length>2)o=d.slice(0,2)+"/"+d.slice(2);
+    dobEl.value=o;schedule();
+  });
+  [zoomEl,pxEl,pyEl].forEach(function(el){el.addEventListener("input",schedule)});
+
+  fileEl.addEventListener("change",function(){
+    var f=fileEl.files&&fileEl.files[0];if(!f)return;
+    if(!/^image\//.test(f.type)){say("That file is not a photo. Choose a JPG or PNG.");return}
+    var fr=new FileReader();
+    fr.onload=function(){
+      var img=new Image();
+      img.onload=function(){photo=img;photoHit.classList.add("has");$("adjust").hidden=false;say("");redraw()};
+      img.onerror=function(){say("That photo could not be read. Try another one.")};
+      img.src=fr.result;
+    };
+    fr.onerror=function(){say("That photo could not be read. Try another one.")};
+    fr.readAsDataURL(f);
+  });
+
+  var sw=$("swatches");
+  function buildSwatches(){
+    if(CONFIG.templates.length<2)return;
+    $("colorBtn").hidden=false;
+    CONFIG.templates.forEach(function(t,i){
+      var b=document.createElement("button");b.type="button";b.className="sw";b.style.background=t.swatch;
+      b.setAttribute("aria-label",t.label+" card");b.setAttribute("aria-pressed",i===tIndex?"true":"false");
+      b.addEventListener("click",function(){
+        tIndex=i;[].forEach.call(sw.children,function(c){c.setAttribute("aria-pressed","false")});
+        b.setAttribute("aria-pressed","true");redraw();
+      });
+      sw.appendChild(b);
+    });
+    $("colorBtn").addEventListener("click",function(){sw.hidden=!sw.hidden;$("colorBtn").setAttribute("aria-expanded",sw.hidden?"false":"true")});
+  }
+
+  var padWrap=$("padwrap"),pad=$("pad"),pctx=pad.getContext("2d"),strokes=[],cur=null;
+  function stroke(c,s,ox,oy){
+    c.beginPath();
+    if(s.length===1){c.arc(s[0][0]-ox,s[0][1]-oy,3.5,0,Math.PI*2);c.fill();return}
+    s.forEach(function(p,i){var x=p[0]-ox,y=p[1]-oy;i?c.lineTo(x,y):c.moveTo(x,y)});c.stroke();
+  }
+  function padDraw(){
+    pctx.clearRect(0,0,pad.width,pad.height);
+    pctx.strokeStyle="rgba(0,0,0,.22)";pctx.lineWidth=2;pctx.beginPath();pctx.moveTo(40,250);pctx.lineTo(pad.width-40,250);pctx.stroke();
+    pctx.strokeStyle=CONFIG.penColor;pctx.fillStyle=CONFIG.penColor;pctx.lineWidth=7;pctx.lineCap="round";pctx.lineJoin="round";
+    strokes.forEach(function(s){stroke(pctx,s,0,0)});
+  }
+  function padPoint(e){var r=pad.getBoundingClientRect();return[(e.clientX-r.left)*pad.width/r.width,(e.clientY-r.top)*pad.height/r.height]}
+  pad.addEventListener("pointerdown",function(e){e.preventDefault();try{pad.setPointerCapture(e.pointerId)}catch(x){}cur=[padPoint(e)];strokes.push(cur);padDraw()});
+  pad.addEventListener("pointermove",function(e){if(!cur)return;cur.push(padPoint(e));padDraw()});
+  function endStroke(){cur=null}
+  pad.addEventListener("pointerup",endStroke);pad.addEventListener("pointercancel",endStroke);
+  function openPad(){strokes=[];cur=null;padDraw();padWrap.hidden=false;$("padDone").focus()}
+  function closePad(){padWrap.hidden=true;signHit.focus()}
+  signHit.addEventListener("click",openPad);
+  $("padClear").addEventListener("click",function(){strokes=[];cur=null;padDraw()});
+  $("padCancel").addEventListener("click",closePad);
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!padWrap.hidden)closePad()});
+  $("padDone").addEventListener("click",function(){
+    if(!strokes.length){closePad();return}
+    var minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
+    strokes.forEach(function(s){s.forEach(function(p){minx=Math.min(minx,p[0]);miny=Math.min(miny,p[1]);maxx=Math.max(maxx,p[0]);maxy=Math.max(maxy,p[1])})});
+    var pd=8,c=document.createElement("canvas");c.width=Math.ceil(Math.max(20,maxx-minx+pd*2));c.height=Math.ceil(Math.max(20,maxy-miny+pd*2));
+    var c2=c.getContext("2d");c2.strokeStyle=CONFIG.penColor;c2.fillStyle=CONFIG.penColor;c2.lineWidth=7;c2.lineCap="round";c2.lineJoin="round";
+    strokes.forEach(function(s){stroke(c2,s,minx-pd,miny-pd)});
+    sig=c;signHit.classList.add("has");closePad();redraw();
+  });
+
+  /* ---- 20-ticket limit: talks to a Google Apps Script link (see the setup guide) ---- */
+  function claimEnabled(){return !!(CONFIG.claim&&CONFIG.claim.endpoint)}
+  function getStatus(){
+    return fetch(CONFIG.claim.endpoint,{method:"GET"}).then(function(r){return r.json()});
+  }
+  function claim(d){
+    return fetch(CONFIG.claim.endpoint,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({name:d.name,dob:d.dob,loc:d.loc,limit:CONFIG.claim.limit})}).then(function(r){return r.json()});
+  }
+
+  function slug(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"card"}
+  var WEB="Open this page from its web address, not by double-clicking the file, so the card can be saved.";
+  function finish(){
+    var url;
+    try{draw({final:true});url=cv.toDataURL("image/png")}catch(e){say(WEB);return}
+    $("resultImg").src=url;
+    var dl=$("dlBtn");dl.href=url;dl.download=CONFIG.filePrefix+"-"+slug(clean(nameEl.value))+".png";
+    setMode("result");
+  }
+  getBtn.addEventListener("click",function(){
+    if(!clean(nameEl.value)){say("Add your name first.");nameEl.focus();return}
+    if(Z.photo&&!photo){say("Submit your photo first.");return}
+    say("");
+    if(!claimEnabled()){finish();return}
+    getBtn.disabled=true;say("Reserving your ticket...");
+    claim({name:clean(nameEl.value),dob:dobEl.value.trim(),loc:clean(locEl.value)}).then(function(r){
+      getBtn.disabled=false;
+      if(r&&r.ok){claimedId=CONFIG.idPrefix+("0000"+r.number).slice(-4);say("");finish()}
+      else if(r&&r.closed){showClosed()}
+      else{say((r&&r.error)||"Something went wrong. Try again.")}
+    }).catch(function(){getBtn.disabled=false;say("No connection. Check your data and try again.")});
+  });
+  $("backBtn").addEventListener("click",function(){setMode("edit")});
+
+  var shareBtn=$("shareBtn");
+  try{var probe=new File([""],"a.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[probe]}))shareBtn.hidden=false}catch(e){}
+  shareBtn.addEventListener("click",function(){
+    cv.toBlob(function(blob){
+      if(!blob)return;
+      var f=new File([blob],CONFIG.filePrefix+".png",{type:"image/png"});
+      navigator.share({files:[f],text:CONFIG.shareText}).catch(function(err){
+        if(err&&err.name!=="AbortError")$("resultNote").textContent="Sharing is not available here. Save the card and post it yourself.";
+      });
+    },"image/png");
+  });
+
+  function showClosed(t){
+    mode="closed";root.dataset.mode="closed";wrap.hidden=false;editTools.hidden=true;result.hidden=true;
+    wrap.removeAttribute("role");wrap.removeAttribute("tabindex");
+    head.textContent=t||CONFIG.claim.closedText;hint.textContent="";redraw();
+  }
+
+  var fontsReady=(document.fonts&&document.fonts.load)?Promise.all([
+    document.fonts.load('700 40px "Caveat"'),document.fonts.load('400 30px "Special Elite"'),document.fonts.load('400 20px "DM Mono"')
+  ]).catch(function(){}):Promise.resolve();
+
+  Promise.all(CONFIG.templates.map(function(t){return load(t.src)})).then(function(imgs){
+    tImgs=imgs;W=imgs[0].naturalWidth;H=imgs[0].naturalHeight;
+    cv.width=W;cv.height=H;off.width=W;off.height=H;cv.style.aspectRatio=W+" / "+H;
+    return load(CONFIG.zones);
+  },function(e){throw new Error("Could not load the card image: "+e.message)}).then(function(zimg){
+    try{Z=detect(zimg)}catch(e){throw new Error(WEB)}
+    if(!Z.photo||!Z.name)throw new Error("The zones image needs a magenta photo box and a cyan name box.");
+    return CONFIG.sample?load(CONFIG.sample).then(function(i){sampleImg=i},function(){}):null;
+  }).then(function(){return fontsReady}).then(function(){
+    buildSwatches();layout();
+    if(CONFIG.opensAt&&Date.now()<new Date(CONFIG.opensAt).getTime()){showClosed(CONFIG.claim.soonText);return}
+    if(!claimEnabled()){setMode("intro");return}
+    return getStatus().then(function(s){
+      if(s&&s.closed){showClosed()}
+      else{setMode("intro");if(s&&typeof s.left==="number")hint.textContent=s.left+" of "+CONFIG.claim.limit+" free tickets left. "+NOTE}
+    },function(){setMode("intro")});
+  }).catch(function(e){fail(e.message)});
+})();
+</script>
+
+</body></html>
