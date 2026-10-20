@@ -149,7 +149,7 @@ var CONFIG={
   introTitle:"Click to make your own",
   editTitle:"Fill in your card",
   doneTitle:"Your ID is ready",
-  claim:{endpoint:"https://script.google.com/macros/s/AKfycbwY5rhKRQH2fDwoVuBAINmCV05SSqkYDq3wM2cI7fFWPiDo5pAxiMpxX-HfxId3fnc/exec",limit:20,closedText:"All 20 free tickets are gone. Thank you, Kagiso. Entry on the day is R100.",soonText:"Free tickets open soon."},
+  claim:{soldOut:true,endpoint:"https://script.google.com/macros/s/AKfycbwY5rhKRQH2fDwoVuBAINmCV05SSqkYDq3wM2cI7fFWPiDo5pAxiMpxX-HfxId3fnc/exec",limit:20,closedText:"All 20 free tickets are gone. Thank you, Kagiso. Entry on the day is R100.",soonText:"Free tickets open soon."},
   opensAt:"2026-10-20T10:00:00+02:00"
 };
 /* ================================================================================= */
@@ -357,7 +357,7 @@ var CONFIG={
   function getStatus(){
     return Promise.race([
       fetch(CONFIG.claim.endpoint,{method:"GET"}).then(function(r){return r.json()}),
-      new Promise(function(_,rej){setTimeout(function(){rej(new Error("slow"))},6000)})
+      new Promise(function(_,rej){setTimeout(function(){rej(new Error("slow"))},12000)})
     ]);
   }
   function claim(d){
@@ -428,6 +428,7 @@ var CONFIG={
   }).then(function(){return Promise.race([fontsReady,new Promise(function(r){setTimeout(r,2500)})])}).then(function(){
     buildSwatches();layout();
     if(CONFIG.opensAt&&Date.now()<new Date(CONFIG.opensAt).getTime()){showClosed(CONFIG.claim.soonText);return}
+    if(CONFIG.claim&&CONFIG.claim.soldOut){showClosed();return}
     if(!claimEnabled()){setMode("intro");return}
     return getStatus().then(function(s){
       if(s&&s.closed){showClosed()}
